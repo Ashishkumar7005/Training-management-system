@@ -1,0 +1,126 @@
+<!-- <app-navbar role="admin"></app-navbar> -->
+
+<div class="page-wrapper">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <button mat-icon-button routerLink="/admin/dashboard" class="back-btn">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div>
+        <h1>Course Management</h1>
+        <p>Add, edit and manage training courses</p>
+      </div>
+    </div>
+    <button mat-raised-button class="add-btn" (click)="openAddDialog()">
+      <mat-icon>add</mat-icon> Add New Course
+    </button>
+  </div>
+
+  <!-- Search Bar -->
+
+ <mat-card class="search-card">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search batches...</mat-label>
+      <input matInput [(ngModel)]="searchText" (input)="onSearch()"
+             placeholder="Search courses..."/>
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <!-- newly added -->
+      <div class="results-badge">
+      <mat-icon>how_to_reg</mat-icon>
+      <span>{{ filteredCourses.length }} courses found</span>
+    </div>
+    <!-- <span class="course-count">{{ filteredCourses.length }} courses found</span> -->
+  </mat-card>
+
+  <!-- DEBUG 
+    <div style="background:yellow; padding:10px; margin-bottom:10px;">
+    <p>isLoading: {{ isLoading }}</p>
+    <p>courses length: {{ courses.length }}</p>
+    <p>filteredCourses length: {{ filteredCourses.length }}</p>
+  </div> -->
+
+  <!-- Loading -->
+  <div class="loading-wrapper" *ngIf="isLoading">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Loading courses...</p>
+  </div>
+
+  <!-- Simple Table — no mat-table -->
+  <mat-card class="table-card" *ngIf="!isLoading">
+
+    <!-- Empty -->
+    <div class="empty-state" *ngIf="filteredCourses.length === 0">
+      <mat-icon>menu_book</mat-icon>
+      <h3>No courses found</h3>
+      <p>Click "Add New Course" to get started</p>
+    </div>
+
+    <!-- Plain HTML Table -->
+    <div class="table-wrapper" *ngIf="filteredCourses.length > 0">
+      <table class="plain-table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Course Name</th>
+            <th>Category</th>
+            <th>Mode</th>
+            <th>Duration</th>
+            <th>Trainer</th>
+            <th>Max</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of filteredCourses">
+            <td><span class="code-badge">{{ c.courseCode }}</span></td>
+            <td>
+              <div class="course-name">{{ c.courseName }}</div>
+              <div class="course-dept">{{ c.department }}</div>
+            </td>
+            <td>
+              <span class="chip"
+                    [style.background]="getCategoryColor(c.category) + '18'"
+                    [style.color]="getCategoryColor(c.category)">
+                {{ c.category }}
+              </span>
+            </td>
+            <td>
+              <span class="chip"
+                    [style.background]="getModeColor(c.trainingMode) + '18'"
+                    [style.color]="getModeColor(c.trainingMode)">
+                {{ c.trainingMode }}
+              </span>
+            </td>
+            <td>{{ c.duration }} {{ c.durationUnit }}</td>
+            <td>{{ c.trainerName }}</td>
+            <td><span class="participants-badge">{{ c.maxParticipants }}</span></td>
+            <td>
+              <span class="status-chip"
+                    [class.active]="c.status === 'Active'"
+                    [class.inactive]="c.status === 'Inactive'">
+                {{ c.status }}
+              </span>
+            </td>
+            <td>
+              <button mat-icon-button matTooltip="Edit"
+                      (click)="openEditDialog(c)">
+                <mat-icon class="edit-icon">edit</mat-icon>
+              </button>
+              <button mat-icon-button matTooltip="Delete"
+                      (click)="deleteCourse(c._id, c.courseName)">
+                <mat-icon class="delete-icon">delete</mat-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </mat-card>
+
+</div>

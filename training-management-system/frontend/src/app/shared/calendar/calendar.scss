@@ -1,0 +1,361 @@
+.page-wrapper {
+  padding: 13px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.page-header {
+  h1 { margin: 0; font-size: 22px; font-weight: 700; color: #2d1b69; }
+  p  { margin: 4px 0 0; font-size: 13px; color: #9e9e9e; }
+}
+
+.loading-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px;
+  gap: 16px;
+  color: #9e9e9e;
+}
+
+// ── Layout ───────────────────────────────────────────
+.calendar-layout {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: 14px;
+  align-items: start;
+  padding-bottom: 16px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Calendar Card ────────────────────────────────────
+.calendar-card {
+  border-radius: 16px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06) !important;
+  overflow: hidden;
+}
+
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 8px;
+
+  .month-year {
+    flex: 1;
+    text-align: center;
+    h2 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #2d1b69;
+    }
+  }
+
+  .today-btn {
+    border-color: #6c3fc5 !important;
+    color: #6c3fc5 !important;
+    border-radius: 8px !important;
+    height: 34px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+}
+
+// ── Weekdays ─────────────────────────────────────────
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: #f8f6ff;
+  border-top: 1px solid #f0ebfa;
+  border-bottom: 1px solid #f0ebfa;
+
+  .weekday {
+    padding: 6px;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #6c3fc5;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+// ── Calendar Grid ─────────────────────────────────────
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border-left: 1px solid #f0ebfa;
+  border-top: 1px solid #f0ebfa;
+}
+
+.calendar-cell {
+  min-height: 70px;
+  padding: 4px;
+  border-right: 1px solid #f0ebfa;
+  border-bottom: 1px solid #f0ebfa;
+  position: relative;
+
+  &.other-month {
+    background: #fafafa;
+    .day-number { color: #ccc; }
+  }
+
+  &.today {
+    background: #f3f0ff;
+    .day-number {
+      background: #6c3fc5;
+      color: white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
+
+.day-number {
+  font-size: 11px;
+  font-weight: 600;
+  color: #2d1b69;
+  margin-bottom: 2px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.batch-events {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.batch-event {
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 0.2s;
+
+  &:hover { opacity: 0.85; }
+}
+
+.more-events {
+  font-size: 10px;
+  color: #9e9e9e;
+  padding: 2px 4px;
+  cursor: pointer;
+}
+
+// ── Legend ────────────────────────────────────────────
+.legend {
+  display: flex;
+  gap: 16px;
+  padding: 12px 20px;
+  border-top: 1px solid #f0ebfa;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #666;
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+}
+
+// ── Side Panel ────────────────────────────────────────
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+// ── Detail Card ───────────────────────────────────────
+.detail-card {
+  border-radius: 14px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06) !important;
+  overflow: hidden;
+}
+
+.detail-header {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+
+  mat-icon { font-size: 22px; flex-shrink: 0; }
+
+  h3 {
+    margin: 0 0 2px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  span { font-size: 11px; opacity: 0.85; }
+}
+
+.detail-body {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #6c3fc5;
+    flex-shrink: 0;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .detail-label {
+    font-size: 10px;
+    color: #9e9e9e;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .detail-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2d1b69;
+  }
+}
+
+// ── Summary Card ──────────────────────────────────────
+.summary-card, .upcoming-card {
+  border-radius: 14px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06) !important;
+  overflow: hidden;
+}
+
+.summary-header {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  mat-icon { color: #6c3fc5; font-size: 20px; }
+  h3 { margin: 0; font-size: 14px; font-weight: 700; color: #2d1b69; }
+}
+
+.summary-stats {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.summary-stat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .summary-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .summary-label {
+    flex: 1;
+    font-size: 13px;
+    color: #555;
+  }
+
+  .summary-count {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  &.total {
+    mat-icon { font-size: 16px; width: 16px; height: 16px; color: #6c3fc5; }
+    .summary-count { color: #2d1b69; }
+  }
+}
+
+// ── Upcoming List ─────────────────────────────────────
+.upcoming-list {
+  padding: 8px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.upcoming-empty {
+  p { margin: 0; font-size: 13px; color: #9e9e9e; text-align: center; padding: 12px 0; }
+}
+
+.upcoming-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover { background: #f5f0ff; }
+
+  .upcoming-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .upcoming-info {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .upcoming-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #2d1b69;
+    }
+
+    .upcoming-date {
+      font-size: 11px;
+      color: #9e9e9e;
+    }
+  }
+}

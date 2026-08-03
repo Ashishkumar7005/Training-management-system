@@ -1,0 +1,160 @@
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1>Browse Batches</h1>
+      <p>View available training batches and request enrollment</p>
+    </div>
+  </div>
+
+<mat-card class="search-card">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search batches...</mat-label>
+      <input matInput [(ngModel)]="searchText" (input)="onSearch()"
+             placeholder="Search by batch name, code, course..."/>
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <!-- newly addded -->
+      
+  <div class="results-badge">
+      <mat-icon>how_to_reg</mat-icon>
+      <span>{{ filteredBatches.length }} batches found</span>
+    </div>
+
+    <!-- <span class="batch-count">{{ filteredBatches.length }} batches found</span> -->
+  </mat-card>
+
+
+  <!-- Loading -->
+  <div class="loading-wrapper" *ngIf="isLoading">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Loading available batches...</p>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+
+    <!-- Empty -->
+    <div class="empty-state" *ngIf="filteredBatches.length === 0">
+      <mat-icon>menu_book</mat-icon>
+      <h3>No batches available</h3>
+      <p>Check back later for upcoming training batches</p>
+    </div>
+
+    <!-- Batch Cards -->
+    <div class="batch-grid" *ngIf="filteredBatches.length > 0">
+      <mat-card class="batch-card" *ngFor="let b of filteredBatches">
+
+        <!-- Card Header -->
+        <div class="card-header">
+          <div class="course-info">
+            <div class="badges">
+              <span class="category-badge"
+                    [style.background]="getCategoryColor(b.course?.category) + '18'"
+                    [style.color]="getCategoryColor(b.course?.category)">
+                {{ b.course?.category }}
+              </span>
+              <span class="mode-badge"
+                    [style.background]="getModeColor(b.course?.trainingMode) + '18'"
+                    [style.color]="getModeColor(b.course?.trainingMode)">
+                {{ b.course?.trainingMode }}
+              </span>
+            </div>
+            <h3>{{ b.course?.courseName }}</h3>
+            <p class="course-code">{{ b.course?.courseCode }}</p>
+          </div>
+
+          <!-- Spots indicator -->
+          <div class="spots-indicator"
+               [class.full]="b.availableSpots === 0"
+               [class.low]="b.availableSpots > 0 && b.availableSpots <= 5"
+               [class.available]="b.availableSpots > 5">
+            <span class="spots-number">{{ b.availableSpots }}</span>
+            <span class="spots-label">spots left</span>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Batch Details -->
+        <div class="batch-details">
+          <div class="detail-row">
+            <mat-icon>badge</mat-icon>
+            <span>{{ b.batchName }} ({{ b.batchCode }})</span>
+          </div>
+          <div class="detail-row">
+            <mat-icon>calendar_today</mat-icon>
+            <span>{{ b.startDate | date:'dd MMM yyyy' }} — {{ b.endDate | date:'dd MMM yyyy' }}</span>
+          </div>
+          <div class="detail-row">
+            <mat-icon>schedule</mat-icon>
+            <span>{{ b.startTime }} - {{ b.endTime }}</span>
+          </div>
+          <div class="detail-row">
+            <mat-icon>location_on</mat-icon>
+            <span>{{ b.venue }}</span>
+          </div>
+          <div class="detail-row">
+            <mat-icon>timelapse</mat-icon>
+            <span>{{ b.course?.duration }} {{ b.course?.durationUnit }}</span>
+          </div>
+        </div>
+
+        <!-- Participants Progress -->
+        <div class="progress-section">
+          <div class="progress-header">
+            <span>Enrolled: {{ b.enrolledParticipants?.length || 0 }}/{{ b.maxParticipants }}</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill"
+                 [style.width.%]="(b.enrolledParticipants?.length || 0) / b.maxParticipants * 100">
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <!-- Action Button -->
+<div class="card-action">
+
+  <!-- Not requested + spots available -->
+  <button mat-raised-button
+          class="enrol-btn"
+          *ngIf="!b.alreadyRequested && b.availableSpots > 0"
+          [disabled]="requestingId === b._id"
+          (click)="requestEnrollment(b)">
+    <mat-spinner diameter="18" *ngIf="requestingId === b._id"></mat-spinner>
+    <span *ngIf="requestingId !== b._id">
+      <!-- <mat-icon>how_to_reg</mat-icon> -->
+      Request Enrollment
+    </span>
+  </button>
+
+  <!-- Already requested — show dynamic status -->
+  <button mat-stroked-button
+          class="status-btn"
+          *ngIf="b.alreadyRequested"
+          disabled
+          [style.color]="getRequestButtonColor(b.requestStatus)"
+          [style.borderColor]="getRequestButtonColor(b.requestStatus)"
+          [style.background]="getRequestButtonColor(b.requestStatus) + '12'">
+    <mat-icon>{{ getRequestButtonIcon(b.requestStatus) }}</mat-icon>
+    {{ b.requestStatus }}
+  </button>
+
+  <!-- Batch full -->
+  <button mat-stroked-button class="full-btn"
+          *ngIf="!b.alreadyRequested && b.availableSpots === 0"
+          disabled>
+    <mat-icon>block</mat-icon>
+    Batch Full
+  </button>
+
+</div>
+
+      </mat-card>
+    </div>
+
+  </ng-container>
+
+</div>

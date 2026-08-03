@@ -1,0 +1,48 @@
+<div class="sidebar" [style.background]="roleColor">
+
+  <!-- User Profile Section -->
+  <div class="user-section">
+    <div class="user-avatar">
+      {{ user?.firstName?.charAt(0) }}{{ user?.lastName?.charAt(0) }}
+    </div>
+    <div class="user-info">
+      <span class="user-name">{{ user?.firstName }} {{ user?.lastName }}</span>
+      <span class="user-username">@{{ user?.username }}</span>
+    </div>
+  </div>
+
+  <mat-divider class="divider"></mat-divider>
+
+  <!-- Navigation Links -->
+  <nav class="nav-links">
+    <button
+      class="nav-item"
+      *ngFor="let link of links"
+      [class.active]="isActive(link.route)"
+      (click)="navigate(link.route)">
+      <mat-icon>{{ link.icon }}</mat-icon>
+      <span>{{ link.label }}</span>
+
+      <!-- Pending Badge -->
+      <span class="nav-badge"
+            *ngIf="$any(link).badge && $any(link).badge > 0">
+        {{ $any(link).badge }}
+      </span>
+
+      <mat-icon class="arrow" *ngIf="isActive(link.route)">
+        chevron_right
+      </mat-icon>
+
+    </button>
+  </nav>
+
+  <!-- Logout -->
+  <div class="sidebar-footer">
+    <mat-divider class="divider"></mat-divider>
+    <button class="nav-item logout-btn" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Sign Out</span>
+    </button>
+  </div>
+
+</div>

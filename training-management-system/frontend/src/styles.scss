@@ -1,0 +1,88 @@
+@use '@angular/material' as mat;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Roboto', sans-serif;
+  background: #f4f3f8;
+}
+
+// ── Fix ALL dropdown/select backgrounds ─────────────────
+.mat-mdc-select-panel,
+.mat-mdc-autocomplete-panel,
+.mdc-menu-surface,
+.mat-mdc-menu-panel {
+  background: #ffffff !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+}
+
+// ── Fix mat-option ───────────────────────────────────────
+.mat-mdc-option {
+  background-color: #ffffff !important;
+
+  &:hover:not(.mat-mdc-option-disabled) {
+    background-color: #f5f0ff !important;
+  }
+
+  &.mdc-list-item--selected {
+    background-color: #ede7f6 !important;
+  }
+}
+
+// ── Fix navbar menu items ────────────────────────────────
+.mat-mdc-menu-item {
+  background-color: #ffffff !important;
+
+  &:hover {
+    background-color: #f5f0ff !important;
+  }
+}
+
+.mat-mdc-menu-panel {
+  background: #ffffff !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+  min-width: 180px !important;
+}
+
+// ── Fix select value display ─────────────────────────────
+.mat-mdc-select-value {
+  color: rgba(0,0,0,0.87) !important;
+}
+
+.mat-mdc-select-arrow {
+  color: rgba(0,0,0,0.54) !important;
+}
+
+// ── Snackbar styles ──────────────────────────────────────
+.snack-success .mdc-snackbar__surface {
+  background: #2e7d32 !important;
+}
+
+.snack-error .mdc-snackbar__surface {
+  background: #c62828 !important;
+}
+
+// ── Scrollbar styling ────────────────────────────────────
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c5b8e8;
+  border-radius: 3px;
+
+  &:hover { background: #6c3fc5; }
+}

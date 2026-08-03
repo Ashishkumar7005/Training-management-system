@@ -1,0 +1,79 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <h1>My Enrollments</h1>
+    <p>Track the status of your training enrollment requests</p>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-wrapper" *ngIf="isLoading">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Loading your enrollments...</p>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+
+    <!-- Empty -->
+    <div class="empty-state" *ngIf="enrollments.length === 0">
+      <mat-icon>school</mat-icon>
+      <h3>No enrollments yet</h3>
+      <p>Browse available courses and request enrollment</p>
+    </div>
+
+    <!-- Table -->
+    <mat-card class="table-card" *ngIf="enrollments.length > 0">
+      <div class="table-wrapper">
+        <table class="enrollment-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Course</th>
+              <th>Batch</th>
+              <th>Training Mode</th>
+              <th>Manager</th>
+              <th>Status</th>
+              <th>Rejection Reason</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let e of enrollments; let i = index">
+              <td class="index-cell">{{ i + 1 }}</td>
+              <td>
+                <div class="cell-main">{{ e.course?.courseName }}</div>
+                <div class="cell-sub">{{ e.course?.courseCode }}</div>
+              </td>
+              <td>
+                <div class="cell-main">{{ e.batch?.batchName }}</div>
+                <div class="cell-sub">{{ e.batch?.batchCode }}</div>
+              </td>
+              <td>
+                <span class="mode-badge">
+                  {{ e.course?.trainingMode || 'N/A' }}
+                </span>
+              </td>
+              <td>
+                {{ e.manager ? e.manager?.firstName + ' ' + e.manager?.lastName : 'Pending' }}
+              </td>
+              <td>
+                <span class="status-chip"
+                      [style.color]="getStatusColor(e.status)"
+                      [style.background]="getStatusColor(e.status) + '18'">
+                  <mat-icon>{{ getStatusIcon(e.status) }}</mat-icon>
+                  {{ e.status }}
+                </span>
+              </td>
+              <td>
+                <span class="reason-text" *ngIf="e.rejectionReason">
+                  {{ e.rejectionReason }}
+                </span>
+                <span class="na-text" *ngIf="!e.rejectionReason">—</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </mat-card>
+
+  </ng-container>
+
+</div>

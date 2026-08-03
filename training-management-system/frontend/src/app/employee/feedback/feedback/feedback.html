@@ -1,0 +1,338 @@
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <div class="page-header">
+    <h1>Training Feedback</h1>
+    <p>Share your feedback to help improve training quality</p>
+  </div>
+
+  <!-- Tab Buttons -->
+  <div class="tab-row">
+    <button class="tab-btn"
+            [class.active]="activeTab === 'submit'"
+            (click)="activeTab = 'submit'">
+      <mat-icon>rate_review</mat-icon>
+      Submit Feedback
+    </button>
+    <button class="tab-btn"
+            [class.active]="activeTab === 'history'"
+            (click)="activeTab = 'history'">
+      <mat-icon>history</mat-icon>
+      My Feedback History
+    </button>
+  </div>
+
+  <!-- ── TAB 1: Submit Feedback ── -->
+  <ng-container *ngIf="activeTab === 'submit'">
+
+    <!-- Loading -->
+    <div class="loading-wrapper" *ngIf="isLoading">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Loading your courses...</p>
+    </div>
+
+    <ng-container *ngIf="!isLoading">
+
+      <!-- No eligible courses -->
+      <div class="empty-state"
+           *ngIf="enrollments.length === 0 && !selectedEnrollment">
+        <mat-icon>rate_review</mat-icon>
+        <h3>No courses available for feedback</h3>
+        <p>You need to be enrolled in a course to submit feedback</p>
+      </div>
+
+      <!-- Step 1: Select Course -->
+      <div class="step-section"
+           *ngIf="enrollments.length > 0 && !selectedEnrollment">
+        <div class="step-header">
+          <div class="step-number">1</div>
+          <h2>Select a Course to Review</h2>
+        </div>
+
+        <div class="enrollment-grid">
+          <mat-card class="enrollment-card"
+                    *ngFor="let e of enrollments"
+                    [class.has-feedback]="e.hasFeedback"
+                    (click)="!e.hasFeedback && selectEnrollment(e)">
+
+            <div class="enrollment-header">
+              <div class="course-icon">
+                <mat-icon>menu_book</mat-icon>
+              </div>
+              <div class="course-info">
+                <h3>{{ e.course?.courseName }}</h3>
+                <p>{{ e.course?.courseCode }} • {{ e.batch?.batchName }}</p>
+                <p class="trainer">
+                  <mat-icon>person</mat-icon>
+                  Trainer: {{ e.course?.trainerName || 'N/A' }}
+                </p>
+              </div>
+              <div class="feedback-status">
+                <span class="done-badge" *ngIf="e.hasFeedback">
+                  <mat-icon>check_circle</mat-icon>
+                  Submitted
+                </span>
+                <span class="pending-badge" *ngIf="!e.hasFeedback">
+                  <mat-icon>rate_review</mat-icon>
+                  Give Feedback
+                </span>
+              </div>
+            </div>
+
+          </mat-card>
+        </div>
+      </div>
+
+      <!-- Step 2: Feedback Form -->
+      <div class="step-section" *ngIf="selectedEnrollment">
+        <div class="step-header">
+          <div class="step-number">2</div>
+          <h2>Submit Your Feedback</h2>
+          <button mat-stroked-button class="back-btn"
+                  (click)="cancelFeedback()">
+            <mat-icon>arrow_back</mat-icon> Back
+          </button>
+        </div>
+
+        <!-- Selected Course Info -->
+        <mat-card class="selected-course-card">
+          <mat-icon>menu_book</mat-icon>
+          <div>
+            <h3>{{ selectedEnrollment.course?.courseName }}</h3>
+            <p>{{ selectedEnrollment.batch?.batchName }} •
+               Trainer: {{ selectedEnrollment.course?.trainerName }}</p>
+          </div>
+        </mat-card>
+
+        <form [formGroup]="feedbackForm" (ngSubmit)="submitFeedback()">
+
+          <div class="feedback-grid">
+
+            <!-- Left Column -->
+            <div class="feedback-col">
+
+              <!-- Course Rating -->
+              <mat-card class="rating-card">
+                <h3>
+                  <mat-icon>menu_book</mat-icon>
+                  Course Rating *
+                </h3>
+                <div class="stars">
+                  <button type="button"
+                          *ngFor="let star of getStars(5)"
+                          class="star-btn"
+                          [class.filled]="star <= courseRating"
+                          (click)="setCourseRating(star)">
+                    <mat-icon>{{ star <= courseRating ? 'star' : 'star_border' }}</mat-icon>
+                  </button>
+                </div>
+                <p class="rating-label" *ngIf="courseRating > 0">
+                  {{ courseRating === 5 ? 'Excellent!' :
+                     courseRating === 4 ? 'Very Good' :
+                     courseRating === 3 ? 'Good' :
+                     courseRating === 2 ? 'Fair' : 'Poor' }}
+                </p>
+                <p class="rating-hint" *ngIf="courseRating === 0">
+                  Click to rate
+                </p>
+              </mat-card>
+
+              <!-- Course Comments -->
+              <div class="form-field">
+                <label>Course Feedback *</label>
+                <mat-form-field appearance="outline" class="full-width">
+                  <textarea matInput formControlName="courseComments"
+                            rows="4"
+                            placeholder="What did you like or dislike about the course content?">
+                  </textarea>
+                  <mat-error>Minimum 10 characters required</mat-error>
+                </mat-form-field>
+              </div>
+
+            </div>
+
+            <!-- Right Column -->
+            <div class="feedback-col">
+
+              <!-- Trainer Rating -->
+              <mat-card class="rating-card">
+                <h3>
+                  <mat-icon>person</mat-icon>
+                  Trainer Rating *
+                </h3>
+                <div class="stars">
+                  <button type="button"
+                          *ngFor="let star of getStars(5)"
+                          class="star-btn"
+                          [class.filled]="star <= trainerRating"
+                          (click)="setTrainerRating(star)">
+                    <mat-icon>{{ star <= trainerRating ? 'star' : 'star_border' }}</mat-icon>
+                  </button>
+                </div>
+                <p class="rating-label" *ngIf="trainerRating > 0">
+                  {{ trainerRating === 5 ? 'Excellent!' :
+                     trainerRating === 4 ? 'Very Good' :
+                     trainerRating === 3 ? 'Good' :
+                     trainerRating === 2 ? 'Fair' : 'Poor' }}
+                </p>
+                <p class="rating-hint" *ngIf="trainerRating === 0">
+                  Click to rate
+                </p>
+              </mat-card>
+
+              <!-- Trainer Comments -->
+              <div class="form-field">
+                <label>Trainer Feedback *</label>
+                <mat-form-field appearance="outline" class="full-width">
+                  <textarea matInput formControlName="trainerComments"
+                            rows="4"
+                            placeholder="How was the trainer's delivery and knowledge?">
+                  </textarea>
+                  <mat-error>Minimum 10 characters required</mat-error>
+                </mat-form-field>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Bottom Section -->
+          <mat-card class="bottom-section">
+
+            <!-- Overall Experience -->
+            <div class="bottom-field">
+              <label>Overall Experience *</label>
+              <div class="experience-options">
+                <button type="button"
+                        *ngFor="let exp of experiences"
+                        class="exp-btn"
+                        [class.selected]="feedbackForm.get('overallExperience')?.value === exp"
+                        [style.borderColor]="feedbackForm.get('overallExperience')?.value === exp ? getExperienceColor(exp) : '#ddd'"
+                        [style.background]="feedbackForm.get('overallExperience')?.value === exp ? getExperienceColor(exp) + '15' : 'white'"
+                        [style.color]="feedbackForm.get('overallExperience')?.value === exp ? getExperienceColor(exp) : '#666'"
+                        (click)="feedbackForm.patchValue({ overallExperience: exp })">
+                  {{ exp }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Would Recommend -->
+            <div class="bottom-field">
+              <label>Would you recommend this course? *</label>
+              <div class="recommend-options">
+                <button type="button"
+                        class="recommend-btn yes"
+                        [class.selected]="feedbackForm.get('wouldRecommend')?.value === true"
+                        (click)="feedbackForm.patchValue({ wouldRecommend: true })">
+                  <mat-icon>thumb_up</mat-icon>
+                  Yes, Recommend
+                </button>
+                <button type="button"
+                        class="recommend-btn no"
+                        [class.selected]="feedbackForm.get('wouldRecommend')?.value === false"
+                        (click)="feedbackForm.patchValue({ wouldRecommend: false })">
+                  <mat-icon>thumb_down</mat-icon>
+                  No, Don't Recommend
+                </button>
+              </div>
+            </div>
+
+          </mat-card>
+
+          <!-- Submit Button -->
+          <div class="submit-row">
+            <button mat-stroked-button type="button"
+                    (click)="cancelFeedback()">
+              Cancel
+            </button>
+            <button mat-raised-button type="submit"
+                    class="submit-btn"
+                    [disabled]="feedbackForm.invalid || isSubmitting">
+              <mat-spinner diameter="18" *ngIf="isSubmitting"></mat-spinner>
+              <span *ngIf="!isSubmitting">
+                <mat-icon>send</mat-icon>
+                Submit Feedback
+              </span>
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+
+    </ng-container>
+
+  </ng-container>
+
+  <!-- ── TAB 2: Feedback History ── -->
+  <ng-container *ngIf="activeTab === 'history'">
+
+    <div class="empty-state" *ngIf="myFeedbacks.length === 0">
+      <mat-icon>history</mat-icon>
+      <h3>No feedback submitted yet</h3>
+      <p>Your submitted feedbacks will appear here</p>
+    </div>
+
+    <div class="history-list" *ngIf="myFeedbacks.length > 0">
+      <mat-card class="history-card" *ngFor="let f of myFeedbacks">
+
+        <div class="history-header">
+          <div class="history-course">
+            <h3>{{ f.course?.courseName }}</h3>
+            <p>{{ f.batch?.batchName }} • {{ f.createdAt | date:'dd MMM yyyy' }}</p>
+          </div>
+          <span class="experience-badge"
+                [style.color]="getExperienceColor(f.overallExperience)"
+                [style.background]="getExperienceColor(f.overallExperience) + '15'">
+            {{ f.overallExperience }}
+          </span>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="history-ratings">
+          <div class="history-rating">
+            <span class="rating-title">Course</span>
+            <div class="mini-stars">
+              <mat-icon *ngFor="let s of getStars(5)"
+                        [class.filled]="s <= f.courseRating">
+                {{ s <= f.courseRating ? 'star' : 'star_border' }}
+              </mat-icon>
+            </div>
+          </div>
+          <div class="history-rating">
+            <span class="rating-title">Trainer</span>
+            <div class="mini-stars">
+              <mat-icon *ngFor="let s of getStars(5)"
+                        [class.filled]="s <= f.trainerRating">
+                {{ s <= f.trainerRating ? 'star' : 'star_border' }}
+              </mat-icon>
+            </div>
+          </div>
+          <div class="history-rating">
+            <span class="rating-title">Recommend</span>
+            <span class="recommend-result"
+                  [style.color]="f.wouldRecommend ? '#2e7d32' : '#c62828'">
+              <mat-icon>{{ f.wouldRecommend ? 'thumb_up' : 'thumb_down' }}</mat-icon>
+              {{ f.wouldRecommend ? 'Yes' : 'No' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="history-comments">
+          <div class="comment-box">
+            <span class="comment-label">Course Feedback</span>
+            <p>{{ f.courseComments }}</p>
+          </div>
+          <div class="comment-box">
+            <span class="comment-label">Trainer Feedback</span>
+            <p>{{ f.trainerComments }}</p>
+          </div>
+        </div>
+
+      </mat-card>
+    </div>
+
+  </ng-container>
+
+</div>

@@ -1,0 +1,98 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <h1>Enroll Participants</h1>
+    <p>Enroll approved participants into their training batches</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-row">
+    <button *ngFor="let f of filters"
+            class="filter-btn"
+            [class.active]="selectedFilter === f"
+            (click)="onFilter(f)">
+      {{ f }}
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-wrapper" *ngIf="isLoading">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Loading enrollments...</p>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+
+    <!-- Empty -->
+    <div class="empty-state" *ngIf="filteredEnrollments.length === 0">
+      <mat-icon>how_to_reg</mat-icon>
+      <h3>No {{ selectedFilter === 'All' ? '' : selectedFilter.toLowerCase() }} enrollments</h3>
+      <p>Nothing to show here</p>
+    </div>
+
+    <!-- Enrollment Table -->
+    <mat-card class="table-card" *ngIf="filteredEnrollments.length > 0">
+      <div class="table-wrapper">
+        <table class="plain-table">
+          <thead>
+            <tr>
+              <th>Employee</th>
+              <th>Course</th>
+              <th>Batch</th>
+              <th>Start Date</th>
+              <th>Manager</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let e of filteredEnrollments">
+              <td>
+                <div class="employee-cell">
+                  <div class="mini-avatar">
+                    {{ e.employee?.firstName?.charAt(0) }}{{ e.employee?.lastName?.charAt(0) }}
+                  </div>
+                  <div>
+                    <div class="emp-name">{{ e.employee?.firstName }} {{ e.employee?.lastName }}</div>
+                    <div class="emp-username">@{{ e.employee?.username }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="course-name">{{ e.course?.courseName }}</div>
+                <div class="course-code">{{ e.course?.courseCode }}</div>
+              </td>
+              <td>{{ e.batch?.batchName }}</td>
+              <td>{{ e.batch?.startDate | date:'dd MMM yyyy' }}</td>
+              <td>{{ e.manager ? e.manager?.firstName + ' ' + e.manager?.lastName : 'N/A' }}</td>
+              <td>
+                <span class="status-chip"
+                      [style.background]="getStatusColor(e.status) + '15'"
+                      [style.color]="getStatusColor(e.status)">
+                  {{ e.status }}
+                </span>
+              </td>
+              <td>
+                <button mat-raised-button class="enroll-btn"
+                        *ngIf="e.status === 'Approved'"
+                        [disabled]="enrollingId === e._id"
+                        (click)="enrollParticipant(e._id)">
+                  <mat-spinner diameter="16" *ngIf="enrollingId === e._id"></mat-spinner>
+                  <span *ngIf="enrollingId !== e._id">Enroll</span>
+                </button>
+                <span class="done-text" *ngIf="e.status === 'Enrolled'">
+                  <mat-icon>check_circle</mat-icon> Done
+                </span>
+                <span class="na-text" *ngIf="e.status !== 'Approved' && e.status !== 'Enrolled'">
+                  —
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </mat-card>
+
+  </ng-container>
+
+</div>

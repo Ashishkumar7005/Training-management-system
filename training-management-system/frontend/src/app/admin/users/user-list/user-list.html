@@ -1,0 +1,167 @@
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <div>
+        <h1>User Management</h1>
+        <p>Manage system users</p>
+      </div>
+    </div>
+    <button mat-raised-button class="add-btn" (click)="openAddDialog()">
+      <mat-icon>person_add</mat-icon> Add New User
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <mat-card class="filter-card">
+    <div class="filter-row">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search users...</mat-label>
+        <input matInput [(ngModel)]="searchText" (input)="onSearch()"
+               placeholder="Name, username, email, ID..."/>
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <div class="role-filters">
+        <button *ngFor="let r of roles"
+                [class.active]="selectedRole === r.value"
+                [style.borderColor]="selectedRole === r.value ? '#6c3fc5' : '#ddd'"
+                [style.background]="selectedRole === r.value ? '#ede7f6' : 'white'"
+                [style.color]="selectedRole === r.value ? '#6c3fc5' : '#666'"
+                class="filter-btn"
+                (click)="onRoleFilter(r.value)">
+          {{ r.label }}
+        </button>
+      </div>
+
+      <span class="user-count">{{ filteredUsers.length }} users</span>
+    </div>
+  </mat-card>
+
+  <!-- Loading -->
+  <div class="loading-wrapper" *ngIf="isLoading">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Loading users...</p>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+
+    <!-- Empty -->
+    <div class="empty-state" *ngIf="filteredUsers.length === 0">
+      <mat-icon>people</mat-icon>
+      <h3>No users found</h3>
+      <p>Click "Add New User" to get started</p>
+    </div>
+
+    <!-- Table -->
+    <mat-card class="table-card" *ngIf="filteredUsers.length > 0">
+      <div class="table-wrapper">
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th>Emp ID</th>
+              <th>Name</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Department</th>
+              <th>Role</th>
+              <th>Manager</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let u of filteredUsers"
+                [class.admin-row]="u.role === 'admin'">
+              <td>
+                <span class="emp-id-badge"
+                      [style.color]="getRoleColor(u.role)"
+                      [style.background]="getRoleColor(u.role) + '15'">
+                  {{ u.employeeId }}
+                </span>
+              </td>
+              <td>
+                <div class="name-cell">
+                  <div class="name-avatar"
+                       [style.background]="getRoleColor(u.role) + '22'"
+                       [style.color]="getRoleColor(u.role)">
+                    {{ getInitials(u) }}
+                  </div>
+                  <div>
+                    <div class="name-main">
+                      {{ u.firstName }} {{ u.lastName }}
+                      <mat-icon class="shield-icon"
+                                *ngIf="u.role === 'admin'"
+                                matTooltip="System Administrator">
+                        shield
+                      </mat-icon>
+                    </div>
+                    <div class="name-sub">{{ u.location }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="username-text">@{{ u.username }}</span>
+              </td>
+              <td class="email-cell">{{ u.email }}</td>
+              <td>
+                <span class="dept-badge">{{ u.department }}</span>
+              </td>
+              <td>
+                <span class="role-chip"
+                      [style.background]="getRoleColor(u.role) + '18'"
+                      [style.color]="getRoleColor(u.role)">
+                  {{ u.role | titlecase }}
+                </span>
+              </td>
+              <td>
+                <span class="manager-text"
+                      *ngIf="u.manager">
+                  {{ u.manager?.firstName }} {{ u.manager?.lastName }}
+                </span>
+                <span class="na-text" *ngIf="!u.manager">—</span>
+              </td>
+              <td>
+                <span class="status-dot-row">
+                  <span class="status-dot"
+                        [class.active]="u.isActive"
+                        [class.inactive]="!u.isActive">
+                  </span>
+                  {{ u.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>
+                <div class="action-btns" *ngIf="u.role !== 'admin'">
+                  <button mat-icon-button
+                          [matTooltip]="u.isActive ? 'Deactivate' : 'Activate'"
+                          (click)="toggleStatus(u)">
+                    <mat-icon [style.color]="u.isActive ? '#e65100' : '#2e7d32'">
+                      {{ u.isActive ? 'block' : 'check_circle' }}
+                    </mat-icon>
+                  </button>
+                  <button mat-icon-button matTooltip="Edit"
+                          (click)="openEditDialog(u)">
+                    <mat-icon style="color:#1565c0">edit</mat-icon>
+                  </button>
+                  <button mat-icon-button matTooltip="Delete"
+                          (click)="deleteUser(u._id, u.firstName + ' ' + u.lastName)">
+                    <mat-icon style="color:#c62828">delete</mat-icon>
+                  </button>
+                </div>
+                <button mat-icon-button
+                        *ngIf="u.role === 'admin'"
+                        matTooltip="Admin cannot be modified"
+                        disabled>
+                  <mat-icon style="color:#9e9e9e">lock</mat-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </mat-card>
+
+  </ng-container>
+
+</div>

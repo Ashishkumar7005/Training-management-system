@@ -1,0 +1,168 @@
+<div class="dialog-wrapper">
+
+  <!-- Header -->
+  <div class="dialog-header">
+    <div class="header-icon">
+      <mat-icon>{{ isEditMode ? 'edit' : 'add_circle' }}</mat-icon>
+    </div>
+    <div>
+      <h2>{{ isEditMode ? 'Edit Course' : 'Add New Course' }}</h2>
+      <p>{{ isEditMode ? 'Update course details' : 'Fill in the details to create a new course' }}</p>
+    </div>
+    <button mat-icon-button (click)="onCancel()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <form [formGroup]="courseForm" (ngSubmit)="onSubmit()">
+    <div class="dialog-body">
+
+      <!-- Row 1: Course Name + Code -->
+      <div class="form-row">
+        <div class="form-col">
+          <label>Course Name *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput formControlName="courseName"
+                   placeholder="e.g. Advanced Excel Training"/>
+            <mat-error *ngIf="hasError('courseName','required')">Required</mat-error>
+            <mat-error *ngIf="hasError('courseName','minlength')">Min 3 characters</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="form-col">
+          <label>Course Code *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput formControlName="courseCode"
+                   placeholder="e.g. EXL-101"/>
+            <mat-error *ngIf="hasError('courseCode','required')">Required</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Row 2: Category + Department -->
+      <div class="form-row">
+        <div class="form-col">
+          <label>Category *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-select formControlName="category" placeholder="Select category">
+              <mat-option *ngFor="let c of categories" [value]="c">{{ c }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="hasError('category','required')">Required</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="form-col">
+          <label>Department</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-select formControlName="department">
+              <mat-option *ngFor="let d of departments" [value]="d">{{ d }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Row 3: Duration + Unit -->
+      <div class="form-row">
+        <div class="form-col">
+          <label>Duration *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput type="number" formControlName="duration"
+                   placeholder="e.g. 5"/>
+            <mat-error *ngIf="hasError('duration','required')">Required</mat-error>
+            <mat-error *ngIf="hasError('duration','min')">Min 1</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="form-col">
+          <label>Unit *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-select formControlName="durationUnit">
+              <mat-option *ngFor="let u of durationUnits" [value]="u">{{ u }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Row 4: Trainer + Max Participants -->
+      <div class="form-row">
+        <div class="form-col">
+          <label>Trainer Name *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput formControlName="trainerName"
+                   placeholder="e.g. John Smith"/>
+            <mat-error *ngIf="hasError('trainerName','required')">Required</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="form-col">
+          <label>Max Participants *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput type="number" formControlName="maxParticipants"
+                   placeholder="e.g. 20"/>
+            <mat-error *ngIf="hasError('maxParticipants','required')">Required</mat-error>
+            <mat-error *ngIf="hasError('maxParticipants','min')">Min 1</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Row 5: Training Mode + Status -->
+      <div class="form-row">
+        <div class="form-col">
+          <label>Training Mode *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-select formControlName="trainingMode" placeholder="Select mode">
+              <mat-option *ngFor="let m of modes" [value]="m">{{ m }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="hasError('trainingMode','required')">Required</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="form-col">
+          <label>Status</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-select formControlName="status">
+              <mat-option *ngFor="let s of statuses" [value]="s">{{ s }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="form-full">
+        <label>Description *</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <textarea matInput formControlName="description" rows="3"
+                    placeholder="Describe what this course covers..."></textarea>
+          <mat-error *ngIf="hasError('description','required')">Required</mat-error>
+          <mat-error *ngIf="hasError('description','minlength')">Min 10 characters</mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Prerequisites -->
+      <div class="form-full">
+        <label>Prerequisites</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <textarea matInput formControlName="prerequisites" rows="2"
+                    placeholder="What skills are needed before joining?"></textarea>
+        </mat-form-field>
+      </div>
+
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Footer -->
+    <div class="dialog-footer">
+      <button mat-stroked-button type="button" (click)="onCancel()">
+        Cancel
+      </button>
+      <button mat-raised-button type="submit"
+              class="submit-btn"
+              [disabled]="courseForm.invalid || isLoading">
+        <mat-spinner diameter="18" *ngIf="isLoading"></mat-spinner>
+        <span *ngIf="!isLoading">
+          <mat-icon>{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
+          {{ isEditMode ? 'Update Course' : 'Create Course' }}
+        </span>
+      </button>
+    </div>
+
+  </form>
+</div>

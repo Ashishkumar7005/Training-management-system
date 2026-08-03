@@ -1,0 +1,203 @@
+<div class="dialog-wrapper">
+
+  <div class="dialog-header">
+    <div class="header-icon">
+      <mat-icon>{{ isEditMode ? 'edit' : 'person_add' }}</mat-icon>
+    </div>
+    <div>
+      <h2>{{ isEditMode ? 'Edit User' : 'Add New User' }}</h2>
+      <p>{{ isEditMode ? 'Update user details' : 'Create a new system user' }}</p>
+    </div>
+    <button mat-icon-button (click)="onCancel()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <div class="dialog-body">
+
+      <!-- Row 1: Employee ID + Role -->
+      <div class="form-row">
+        <div class="form-col">
+          <label>Employee ID *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput formControlName="employeeId"
+                   placeholder="e.g. EMP004"/>
+            <mat-error *ngIf="hasError('employeeId','required')">Required</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="form-col">
+          <label>Role *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-select formControlName="role">
+              <mat-option *ngFor="let r of roles" [value]="r">
+                {{ r | titlecase }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Row 2: First Name + Last Name -->
+      <div class="form-row">
+        <div class="form-col">
+          <label>First Name *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput formControlName="firstName" placeholder="e.g. John"/>
+            <mat-error *ngIf="hasError('firstName','required')">Required</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="form-col">
+          <label>Last Name *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput formControlName="lastName" placeholder="e.g. Smith"/>
+            <mat-error *ngIf="hasError('lastName','required')">Required</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Row 3: Age + Gender -->
+      <div class="form-row">
+        <div class="form-col">
+          <label>Age *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput type="number" formControlName="age" placeholder="e.g. 30"/>
+            <mat-error *ngIf="hasError('age','required')">Required</mat-error>
+            <mat-error *ngIf="hasError('age','min')">Min age is 18</mat-error>
+            <mat-error *ngIf="hasError('age','max')">Max age is 65</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="form-col">
+          <label>Gender *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-select formControlName="gender" placeholder="Select gender">
+              <mat-option *ngFor="let g of genders" [value]="g">{{ g }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="hasError('gender','required')">Required</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Row 4: Department + Location -->
+      <div class="form-row">
+        <div class="form-col">
+          <label>Department *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-select formControlName="department" placeholder="Select department">
+              <mat-option *ngFor="let d of departments" [value]="d">{{ d }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="hasError('department','required')">Required</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="form-col">
+          <label>Location *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput formControlName="location" placeholder="e.g. New York"/>
+            <mat-error *ngIf="hasError('location','required')">Required</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Row 5: Joining Date + Status -->
+      <div class="form-row">
+        <div class="form-col">
+          <label>Joining Date *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput [matDatepicker]="joinPicker"
+                   formControlName="joiningDate"
+                   placeholder="DD/MM/YYYY"/>
+            <mat-datepicker-toggle matSuffix [for]="joinPicker">
+            </mat-datepicker-toggle>
+            <mat-datepicker #joinPicker></mat-datepicker>
+            <mat-error *ngIf="hasError('joiningDate','required')">Required</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="form-col">
+          <label>Status</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-select formControlName="isActive">
+              <mat-option *ngFor="let s of statuses" [value]="s.value">
+                {{ s.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Row 6: Username + Email -->
+      <div class="form-row">
+        <div class="form-col">
+          <label>Username *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput formControlName="username" placeholder="e.g. john.smith"/>
+            <mat-error *ngIf="hasError('username','required')">Required</mat-error>
+            <mat-error *ngIf="hasError('username','minlength')">Min 3 characters</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="form-col">
+          <label>Email *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput type="email" formControlName="email"
+                   placeholder="e.g. john@abc.com"/>
+            <mat-error *ngIf="hasError('email','required')">Required</mat-error>
+            <mat-error *ngIf="hasError('email','email')">Invalid email</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Row 7: Manager -->
+      <div class="form-full">
+        <label>Assigned Manager</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select formControlName="manager"
+                      placeholder="Select manager (optional)">
+            <mat-option [value]="''">None</mat-option>
+            <mat-option *ngFor="let m of managers" [value]="m._id">
+              {{ m.firstName }} {{ m.lastName }}
+              ({{ m.employeeId }})
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Password -->
+      <div class="form-full">
+        <label>
+          {{ isEditMode ? 'New Password (leave blank to keep current)' : 'Password *' }}
+        </label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput
+                 [type]="hidePassword ? 'password' : 'text'"
+                 formControlName="password"
+                 placeholder="Min 6 characters"/>
+          <button mat-icon-button matSuffix type="button"
+                  (click)="hidePassword = !hidePassword">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="hasError('password','required')">Required</mat-error>
+          <mat-error *ngIf="hasError('password','minlength')">Min 6 characters</mat-error>
+        </mat-form-field>
+      </div>
+
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="dialog-footer">
+      <button mat-stroked-button type="button" (click)="onCancel()">
+        Cancel
+      </button>
+      <button mat-raised-button type="submit" class="submit-btn"
+              [disabled]="userForm.invalid || isLoading">
+        <mat-spinner diameter="18" *ngIf="isLoading"></mat-spinner>
+        <span *ngIf="!isLoading">
+          <mat-icon>{{ isEditMode ? 'save' : 'person_add' }}</mat-icon>
+          {{ isEditMode ? 'Update User' : 'Create User' }}
+        </span>
+      </button>
+    </div>
+
+  </form>
+</div>

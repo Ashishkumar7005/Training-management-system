@@ -1,0 +1,127 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div>
+      <h1>View Batches</h1>
+      <p>View all available training batches</p>
+    </div>
+  </div>
+
+  <!-- Search -->
+ <mat-card class="search-card">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search batches...</mat-label>
+      <input matInput [(ngModel)]="searchText" (input)="onSearch()"
+             placeholder="Search by batch name, code, course..."/>
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <!-- newly added -->
+      <div class="results-badge">
+      <mat-icon>how_to_reg</mat-icon>
+      <span>{{ filteredBatches.length }} batches found</span>
+    </div>
+
+    <!-- <span class="batch-count">{{ filteredBatches.length }} batches found</span> -->
+  </mat-card>
+
+  
+  <!-- Loading -->
+  <div class="loading-wrapper" *ngIf="isLoading">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Loading batches...</p>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+
+    <!-- Empty -->
+    <div class="empty-state" *ngIf="filteredBatches.length === 0">
+      <mat-icon>group</mat-icon>
+      <h3>No batches found</h3>
+      <p>No training batches available</p>
+    </div>
+
+    <!-- Batch Cards — View Only -->
+    <div class="batch-grid" *ngIf="filteredBatches.length > 0">
+      <mat-card class="batch-card" *ngFor="let b of filteredBatches">
+
+        <div class="card-header">
+          <div class="batch-info">
+            <span class="batch-code">{{ b.batchCode }}</span>
+            <h3>{{ b.batchName }}</h3>
+            <p class="course-name">
+              <mat-icon>menu_book</mat-icon>
+              {{ b.course?.courseName || 'N/A' }}
+            </p>
+          </div>
+          <span class="status-badge"
+                [style.background]="getStatusColor(b.status) + '18'"
+                [style.color]="getStatusColor(b.status)">
+            {{ b.status }}
+          </span>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="card-details">
+          <div class="detail-item">
+            <mat-icon>calendar_today</mat-icon>
+            <div>
+              <span class="detail-label">Start Date</span>
+              <span class="detail-value">{{ b.startDate | date:'dd MMM yyyy' }}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <mat-icon>event</mat-icon>
+            <div>
+              <span class="detail-label">End Date</span>
+              <span class="detail-value">{{ b.endDate | date:'dd MMM yyyy' }}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <mat-icon>schedule</mat-icon>
+            <div>
+              <span class="detail-label">Time</span>
+              <span class="detail-value">{{ b.startTime }} - {{ b.endTime }}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <mat-icon>location_on</mat-icon>
+            <div>
+              <span class="detail-label">Venue</span>
+              <span class="detail-value">{{ b.venue }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Participants -->
+        <div class="participants-section">
+          <div class="participants-header">
+            <span>
+              <mat-icon>people</mat-icon> Participants
+            </span>
+            <span class="spots">
+              {{ b.enrolledParticipants?.length || 0 }}/{{ b.maxParticipants }}
+              ({{ getAvailableSpots(b) }} spots left)
+            </span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill"
+                 [style.width.%]="(b.enrolledParticipants?.length || 0) / b.maxParticipants * 100"
+                 [style.background]="getStatusColor(b.status)">
+            </div>
+          </div>
+        </div>
+
+        <!-- View Only Notice -->
+        <div class="view-only-notice">
+          <mat-icon>visibility</mat-icon>
+          <span>View Only</span>
+        </div>
+
+      </mat-card>
+    </div>
+
+  </ng-container>
+
+</div>

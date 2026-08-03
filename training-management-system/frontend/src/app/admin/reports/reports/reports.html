@@ -1,0 +1,431 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <h1>Reports</h1>
+    <p>Training management system reports and analytics</p>
+  </div>
+
+  <mat-tab-group class="reports-tabs" animationDuration="200ms">
+
+    <!-- ── Tab 1: Course Calendar ─────────────────── -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>calendar_month</mat-icon>
+        &nbsp; Course Calendar
+      </ng-template>
+
+      <div class="tab-content">
+
+        <!-- Toolbar -->
+        <!-- Toolbar -->
+<div class="tab-toolbar">
+  <div class="search-block">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search batches...</mat-label>
+      <input matInput [(ngModel)]="searchCalendar"
+             (input)="onSearchCalendar()"
+             placeholder="Batch name, code, course..."/>
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+    <div class="results-badge">
+      <mat-icon>calendar_today</mat-icon>
+      <span>{{ filteredBatches.length }} batches found</span>
+    </div>
+  </div>
+</div>
+        
+        <!-- <div class="tab-toolbar">
+          <div class="search-wrapper">
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>Search batches...</mat-label>
+              <input matInput [(ngModel)]="searchCalendar"
+                     (input)="onSearchCalendar()"
+                     placeholder="Batch name, code, course..."/>
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+            <span class="count-text">{{ filteredBatches.length }} batches</span>
+          </div>
+        </div> -->
+
+        <!-- Loading -->
+        <div class="loading-wrapper" *ngIf="loadingCalendar">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+
+        <!-- Table -->
+        <mat-card class="table-card" *ngIf="!loadingCalendar">
+          <div class="table-wrapper">
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>Batch Code</th>
+                  <th>Batch Name</th>
+                  <th>Course</th>
+                  <th>Category</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Time</th>
+                  <th>Venue</th>
+                  <th>Participants</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let b of filteredBatches">
+                  <td><span class="code-badge">{{ b.batchCode }}</span></td>
+                  <td class="bold-cell">{{ b.batchName }}</td>
+                  <td>
+                    <div class="cell-main">{{ b.course?.courseName }}</div>
+                    <div class="cell-sub">{{ b.course?.courseCode }}</div>
+                  </td>
+                  <td>
+                    <span class="chip"
+                          [style.color]="b.course?.category === 'Technical' ? '#1565c0' : '#6a1b9a'"
+                          [style.background]="b.course?.category === 'Technical' ? '#e3f2fd' : '#f3e5f5'">
+                      {{ b.course?.category }}
+                    </span>
+                  </td>
+                  <td>{{ b.startDate | date:'dd MMM yyyy' }}</td>
+                  <td>{{ b.endDate   | date:'dd MMM yyyy' }}</td>
+                  <td>{{ b.startTime }} - {{ b.endTime }}</td>
+                  <td>{{ b.venue }}</td>
+                  <td>
+                    <span class="participants-badge">
+                      {{ b.enrolledParticipants?.length || 0 }}/{{ b.maxParticipants }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="status-chip"
+                          [style.color]="getStatusColor(b.status)"
+                          [style.background]="getStatusColor(b.status) + '18'">
+                      {{ b.status }}
+                    </span>
+                  </td>
+                </tr>
+                <tr *ngIf="filteredBatches.length === 0">
+                  <td colspan="10" class="empty-row">No batches found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </mat-card>
+
+      </div>
+    </mat-tab>
+
+    <!-- ── Tab 2: Enrollment Requests ─────────────── -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>how_to_reg</mat-icon>
+        &nbsp; Enrollment Requests
+      </ng-template>
+
+      <div class="tab-content">
+
+        <!-- Search Row -->
+       <!-- <div class="search-filter-block">
+  <div class="search-block">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search by employee, course, batch...</mat-label>
+      <input matInput [(ngModel)]="searchRequests"
+             (input)="onSearchRequests()"/>
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+    <div class="results-badge">
+      <mat-icon>how_to_reg</mat-icon>
+      <span>{{ filteredEnrollments.length }} requests found</span>
+    </div>
+  </div> -->
+
+  <!-- Filter Row -->
+  <!-- <div class="filter-row">
+    <span class="filter-label">Filter by status:</span>
+    <div class="status-filters">
+      <button *ngFor="let s of statusFilters"
+              class="filter-btn"
+              [class.active]="selectedStatus === s"
+              [style.borderColor]="selectedStatus === s ? getStatusColor(s) : '#ddd'"
+              [style.background]="selectedStatus === s ? getStatusColor(s) + '18' : 'white'"
+              [style.color]="selectedStatus === s ? getStatusColor(s) : '#666'"
+              (click)="onStatusFilter(s)">
+        {{ s }}
+      </button>
+    </div>
+  </div> -->
+       
+  <div class="search-filter-block">
+  <div class="search-block">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search by employee, course, batch...</mat-label>
+      <input matInput [(ngModel)]="searchRequests"
+             (input)="onSearchRequests()"/>
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+    <div class="results-badge">
+      <mat-icon>how_to_reg</mat-icon>
+      <span>{{ filteredEnrollments.length }} requests found</span>
+    </div>
+  </div>
+
+  <!-- Filter Row -->
+  <div class="filter-row">
+    <span class="filter-label">Filter by status:</span>
+    <div class="status-filters">
+      <button *ngFor="let s of statusFilters"
+              class="filter-btn"
+              [class.active]="selectedStatus === s"
+              [style.borderColor]="selectedStatus === s ? getStatusColor(s) : '#ddd'"
+              [style.background]="selectedStatus === s ? getStatusColor(s) + '18' : 'white'"
+              [style.color]="selectedStatus === s ? getStatusColor(s) : '#666'"
+              (click)="onStatusFilter(s)">
+        {{ s }}
+      </button>
+    </div>
+  </div>
+</div>
+
+        <!-- Loading -->
+        <div class="loading-wrapper" *ngIf="loadingRequests">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+
+        <!-- Table -->
+        <mat-card class="table-card" *ngIf="!loadingRequests">
+          <div class="table-wrapper">
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>Emp ID</th>
+                  <th>Employee</th>
+                  <th>Department</th>
+                  <th>Course</th>
+                  <th>Batch</th>
+                  <th>Requested</th>
+                  <th>Manager</th>
+                  <th>Status</th>
+                  <th>Reason</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let e of filteredEnrollments">
+                  <td><span class="code-badge">{{ e.employee?.employeeId }}</span></td>
+                  <td>
+                    <div class="cell-main">
+                      {{ e.employee?.firstName }} {{ e.employee?.lastName }}
+                    </div>
+                    <div class="cell-sub">{{ e.employee?.email }}</div>
+                  </td>
+                  <td>{{ e.employee?.department }}</td>
+                  <td>
+                    <div class="cell-main">{{ e.course?.courseName }}</div>
+                    <div class="cell-sub">{{ e.course?.courseCode }}</div>
+                  </td>
+                  <td>{{ e.batch?.batchName }}</td>
+                  <td>{{ e.requestedAt | date:'dd MMM yyyy' }}</td>
+                  <td>
+                    {{ e.manager ? e.manager?.firstName + ' ' + e.manager?.lastName : 'Pending' }}
+                  </td>
+                  <td>
+                    <span class="status-chip"
+                          [style.color]="getStatusColor(e.status)"
+                          [style.background]="getStatusColor(e.status) + '18'">
+                      {{ e.status }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="reason-text" *ngIf="e.rejectionReason">
+                      {{ e.rejectionReason }}
+                    </span>
+                    <span class="na-text" *ngIf="!e.rejectionReason">—</span>
+                  </td>
+                </tr>
+                <tr *ngIf="filteredEnrollments.length === 0">
+                  <td colspan="9" class="empty-row">No requests found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </mat-card>
+
+      </div>
+    </mat-tab>
+
+    <!-- ── Tab 3: Enrollment Status ────────────────── -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>bar_chart</mat-icon>
+        &nbsp; Enrollment Status
+      </ng-template>
+
+      <div class="tab-content">
+
+        <!-- Loading -->
+        <div class="loading-wrapper" *ngIf="loadingStatus">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+
+        <ng-container *ngIf="!loadingStatus && statusSummary">
+
+          <div class="charts-layout">
+
+            <!-- Left: Donut Chart -->
+            <mat-card class="chart-card">
+              <div class="chart-header">
+                <mat-icon>donut_large</mat-icon>
+                <h3>Enrollment Status Overview</h3>
+              </div>
+              <mat-divider></mat-divider>
+
+              <div class="donut-section">
+                <!-- SVG Donut Chart -->
+                <!-- SVG Donut Chart -->
+<div class="donut-wrapper">
+  <svg viewBox="0 0 200 200" class="donut-svg">
+
+    <!-- Background circle -->
+    <circle cx="100" cy="100" r="70"
+            fill="none"
+            stroke="#f0ebfa"
+            stroke-width="28"/>
+
+    <!-- Pending -->
+    <circle cx="100" cy="100" r="70"
+            fill="none"
+            stroke="#e65100"
+            stroke-width="28"
+            [attr.stroke-dasharray]="getDonutDash(statusSummary.requested) + ' 439.8'"
+            [attr.stroke-dashoffset]="getDonutOffset(-1)"
+            transform="rotate(-90 100 100)"/>
+
+    <!-- Approved -->
+    <circle cx="100" cy="100" r="70"
+            fill="none"
+            stroke="#1565c0"
+            stroke-width="28"
+            [attr.stroke-dasharray]="getDonutDash(statusSummary.approved) + ' 439.8'"
+            [attr.stroke-dashoffset]="getDonutOffset(0)"
+            transform="rotate(-90 100 100)"/>
+
+    <!-- Rejected -->
+    <circle cx="100" cy="100" r="70"
+            fill="none"
+            stroke="#c62828"
+            stroke-width="28"
+            [attr.stroke-dasharray]="getDonutDash(statusSummary.rejected) + ' 439.8'"
+            [attr.stroke-dashoffset]="getDonutOffset(1)"
+            transform="rotate(-90 100 100)"/>
+
+    <!-- Enrolled -->
+    <circle cx="100" cy="100" r="70"
+            fill="none"
+            stroke="#2e7d32"
+            stroke-width="28"
+            [attr.stroke-dasharray]="getDonutDash(statusSummary.enrolled) + ' 439.8'"
+            [attr.stroke-dashoffset]="getDonutOffset(2)"
+            transform="rotate(-90 100 100)"/>
+
+    <!-- Completed -->
+    <circle cx="100" cy="100" r="70"
+            fill="none"
+            stroke="#6a1b9a"
+            stroke-width="28"
+            [attr.stroke-dasharray]="getDonutDash(statusSummary.completed) + ' 439.8'"
+            [attr.stroke-dashoffset]="getDonutOffset(3)"
+            transform="rotate(-90 100 100)"/>
+
+    <!-- Center Text -->
+    <text x="100" y="95"
+          text-anchor="middle"
+          font-size="28"
+          font-weight="800"
+          fill="#2d1b69">
+      {{ statusSummary.total }}
+    </text>
+    <text x="100" y="115"
+          text-anchor="middle"
+          font-size="11"
+          fill="#9e9e9e">
+      Total
+    </text>
+
+  </svg>
+</div>
+
+                <!-- Legend -->
+                <div class="donut-legend">
+                  <div class="legend-item"
+                       *ngFor="let item of getStatusItems()">
+                    <div class="legend-color"
+                         [style.background]="item.color"></div>
+                    <div class="legend-info">
+                      <span class="legend-label">{{ item.label }}</span>
+                      <span class="legend-value"
+                            [style.color]="item.color">
+                        {{ item.value }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-card>
+
+            <!-- Right: Horizontal Bar Chart -->
+            <mat-card class="chart-card">
+              <div class="chart-header">
+                <mat-icon>bar_chart</mat-icon>
+                <h3>Enrollments Per Course</h3>
+              </div>
+              <mat-divider></mat-divider>
+
+              <div class="bar-chart-section">
+                <div class="empty-chart"
+                     *ngIf="courseBreakdown.length === 0">
+                  <mat-icon>menu_book</mat-icon>
+                  <p>No course data available</p>
+                </div>
+
+                <div class="bar-chart" *ngIf="courseBreakdown.length > 0">
+                  <div class="bar-item"
+                       *ngFor="let c of courseBreakdown; let i = index">
+                    <div class="bar-label">
+                      <span class="bar-name">{{ c.courseName }}</span>
+                      <span class="bar-code">{{ c.courseCode }}</span>
+                    </div>
+                    <div class="bar-track">
+                      <div class="bar-fill"
+                           [style.width.%]="getBarWidth(c.total)"
+                           [style.background]="getBarColor(i)">
+                      </div>
+                      <span class="bar-value">{{ c.total }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-card>
+
+          </div>
+
+          <!-- Bottom: Status Summary Row -->
+          <div class="status-row">
+            <mat-card class="status-mini-card"
+                      *ngFor="let item of getStatusItems()">
+              <div class="mini-icon"
+                   [style.background]="item.color + '18'">
+                <mat-icon [style.color]="item.color">{{ item.icon }}</mat-icon>
+              </div>
+              <div class="mini-info">
+                <span class="mini-value"
+                      [style.color]="item.color">{{ item.value }}</span>
+                <span class="mini-label">{{ item.label }}</span>
+              </div>
+            </mat-card>
+          </div>
+
+        </ng-container>
+
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+
+</div>

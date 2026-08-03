@@ -1,0 +1,27 @@
+<div class="dashboard-wrapper">
+
+  <!-- Welcome Banner -->
+  <div class="welcome-banner">
+    <div class="welcome-text">
+      <h1>Welcome back, {{ user?.firstName }}! 👋</h1>
+      <p>Here's an overview of your Training Management System.</p>
+    </div>
+    <div class="welcome-icon">
+      <mat-icon>admin_panel_settings</mat-icon>
+    </div>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="stats-grid">
+    <mat-card class="stat-card" *ngFor="let stat of stats">
+      <div class="stat-icon" [style.background]="stat.bg">
+        <mat-icon [style.color]="stat.color">{{ stat.icon }}</mat-icon>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ stat.value }}</span>
+        <span class="stat-label">{{ stat.label }}</span>
+      </div>
+    </mat-card>
+  </div>
+
+</div>

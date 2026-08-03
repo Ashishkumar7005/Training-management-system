@@ -1,0 +1,218 @@
+<div class="page-wrapper">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <h1>Course Calendar</h1>
+            <p>View all scheduled training batches</p>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-wrapper" *ngIf="isLoading">
+        <mat-spinner diameter="48"></mat-spinner>
+        <p>Loading calendar...</p>
+    </div>
+
+    <ng-container *ngIf="!isLoading">
+        <div class="calendar-layout">
+
+            <!-- Left: Calendar -->
+            <mat-card class="calendar-card">
+
+                <!-- Calendar Navigation -->
+                <div class="calendar-nav">
+                    <button mat-icon-button (click)="prevMonth()">
+                        <mat-icon>chevron_left</mat-icon>
+                    </button>
+                    <div class="month-year">
+                        <h2>{{ months[currentMonth] }} {{ currentYear }}</h2>
+                    </div>
+                    <button mat-icon-button (click)="nextMonth()">
+                        <mat-icon>chevron_right</mat-icon>
+                    </button>
+                    <button mat-stroked-button class="today-btn" (click)="goToToday()">
+                        Today
+                    </button>
+                </div>
+
+                <mat-divider></mat-divider>
+
+                <!-- Weekday Headers -->
+                <div class="weekdays">
+                    <div class="weekday" *ngFor="let day of weekDays">{{ day }}</div>
+                </div>
+
+                <!-- Calendar Grid -->
+                <div class="calendar-grid">
+                    <div class="calendar-cell" *ngFor="let cell of calendarDays" [class.other-month]="!cell.current"
+                        [class.today]="cell.today">
+
+                        <!-- Day Number -->
+                        <div class="day-number">{{ cell.day }}</div>
+
+                        <!-- Batch Events -->
+                        <div class="batch-events">
+                            <div class="batch-event" *ngFor="let b of cell.batches | slice:0:2"
+                                [style.background]="getStatusColor($any(b).status)" [matTooltip]="$any(b).batchName"
+                                (click)="selectBatch(b)">
+                                {{ $any(b).batchName | slice:0:12 }}{{ $any(b).batchName?.length > 12 ? '...' : '' }}
+                            </div>
+                            <div class="more-events" *ngIf="cell.batches.length > 2">
+                                +{{ cell.batches.length - 2 }} more
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Legend -->
+                <div class="legend">
+                    <div class="legend-item" *ngFor="let s of ['Upcoming','Ongoing','Completed','Cancelled']">
+                        <span class="legend-dot" [style.background]="getStatusColor(s)"></span>
+                        <span>{{ s }}</span>
+                    </div>
+                </div>
+
+            </mat-card>
+
+            <!-- Right: Batch Details / Month Summary -->
+            <div class="side-panel">
+
+                <!-- Selected Batch Details -->
+                <mat-card class="detail-card" *ngIf="selectedBatch">
+                    <div class="detail-header" [style.background]="getStatusColor(selectedBatch.status)">
+                        <mat-icon>event</mat-icon>
+                        <div>
+                            <h3>{{ selectedBatch.batchName }}</h3>
+                            <span>{{ selectedBatch.status }}</span>
+                        </div>
+                        <button mat-icon-button (click)="selectedBatch = null" style="color:white; margin-left:auto">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </div>
+
+                    <div class="detail-body">
+                        <div class="detail-row">
+                            <mat-icon>badge</mat-icon>
+                            <div>
+                                <span class="detail-label">Batch Code</span>
+                                <span class="detail-value">{{ selectedBatch.batchCode }}</span>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <mat-icon>menu_book</mat-icon>
+                            <div>
+                                <span class="detail-label">Course</span>
+                                <span class="detail-value">
+                                    {{ selectedBatch.course?.courseName || 'N/A' }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <mat-icon>calendar_today</mat-icon>
+                            <div>
+                                <span class="detail-label">Start Date</span>
+                                <span class="detail-value">
+                                    {{ selectedBatch.startDate | date:'dd MMM yyyy' }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <mat-icon>event</mat-icon>
+                            <div>
+                                <span class="detail-label">End Date</span>
+                                <span class="detail-value">
+                                    {{ selectedBatch.endDate | date:'dd MMM yyyy' }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <mat-icon>schedule</mat-icon>
+                            <div>
+                                <span class="detail-label">Time</span>
+                                <span class="detail-value">
+                                    {{ selectedBatch.startTime }} - {{ selectedBatch.endTime }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <mat-icon>location_on</mat-icon>
+                            <div>
+                                <span class="detail-label">Venue</span>
+                                <span class="detail-value">{{ selectedBatch.venue }}</span>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <mat-icon>people</mat-icon>
+                            <div>
+                                <span class="detail-label">Participants</span>
+                                <span class="detail-value">
+                                    {{ selectedBatch.enrolledParticipants?.length || 0 }}
+                                    / {{ selectedBatch.maxParticipants }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </mat-card>
+
+                <!-- Month Summary -->
+                <mat-card class="summary-card">
+                    <div class="summary-header">
+                        <mat-icon>summarize</mat-icon>
+                        <h3>{{ months[currentMonth] }} Summary</h3>
+                    </div>
+
+                    <mat-divider></mat-divider>
+
+                    <div class="summary-stats">
+                        <div class="summary-stat" *ngFor="let s of ['Upcoming','Ongoing','Completed','Cancelled']">
+                            <div class="summary-dot" [style.background]="getStatusColor(s)">
+                            </div>
+                            <span class="summary-label">{{ s }}</span>
+                            <span class="summary-count" [style.color]="getStatusColor(s)">
+                                {{ getMonthBatchCount(s) }}
+                            </span>
+                        </div>
+
+                        <mat-divider></mat-divider>
+
+                        <div class="summary-stat total">
+                            <mat-icon>event_note</mat-icon>
+                            <span class="summary-label">Total Batches</span>
+                            <span class="summary-count">{{ getMonthTotalBatches() }}</span>
+                        </div>
+                    </div>
+                </mat-card>
+
+                <!-- Upcoming Batches List -->
+                <mat-card class="upcoming-card">
+                    <div class="summary-header">
+                        <mat-icon>upcoming</mat-icon>
+                        <h3>Upcoming This Month</h3>
+                    </div>
+
+                    <mat-divider></mat-divider>
+
+                    <div class="upcoming-list">
+                        <div class="upcoming-empty" *ngIf="getUpcomingBatches().length === 0">
+                            <p>No upcoming batches this month</p>
+                        </div>
+                        <div class="upcoming-item" *ngFor="let b of getUpcomingBatches()" (click)="selectBatch(b)">
+                            <div class="upcoming-dot" [style.background]="getStatusColor(b.status)">
+                            </div>
+                            <div class="upcoming-info">
+                                <span class="upcoming-name">{{ b.batchName }}</span>
+                                <span class="upcoming-date">
+                                    {{ b.startDate | date:'dd MMM' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </mat-card>
+
+            </div>
+        </div>
+    </ng-container>
+
+</div>

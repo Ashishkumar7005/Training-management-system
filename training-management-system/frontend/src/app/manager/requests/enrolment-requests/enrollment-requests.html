@@ -1,0 +1,128 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <h1>Enrollment Requests</h1>
+    <p>Review and manage employee training enrollment requests</p>
+  </div>
+
+  <!-- Filter Buttons -->
+ <!-- Filter Buttons -->
+<div class="filter-row">
+  <button *ngFor="let f of filters"
+          class="filter-btn"
+          [class.active]="selectedFilter === f"
+          (click)="onFilter(f)">
+    {{ f }}
+  </button>
+</div>
+
+  <!-- Loading -->
+  <div class="loading-wrapper" *ngIf="isLoading">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Loading requests...</p>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+
+    <!-- Empty -->
+    <div class="empty-state" *ngIf="filteredEnrollments.length === 0">
+      <mat-icon>pending_actions</mat-icon>
+      <h3>No {{ selectedFilter === 'All' ? '' : selectedFilter.toLowerCase() }} requests</h3>
+      <p>All caught up!</p>
+    </div>
+
+    <!-- Request Cards -->
+    <div class="requests-list" *ngIf="filteredEnrollments.length > 0">
+      <mat-card class="request-card" *ngFor="let e of filteredEnrollments">
+
+        <div class="card-main">
+
+          <!-- Employee Info -->
+          <div class="employee-info">
+            <div class="avatar">
+              {{ e.employee?.firstName?.charAt(0) }}{{ e.employee?.lastName?.charAt(0) }}
+            </div>
+            <div class="details">
+              <h3>{{ e.employee?.firstName }} {{ e.employee?.lastName }}</h3>
+              <p>@{{ e.employee?.username }}</p>
+              <p class="email">{{ e.employee?.email }}</p>
+            </div>
+          </div>
+
+          <!-- Course Info -->
+          <div class="course-info">
+            <div class="course-name">{{ e.course?.courseName }}</div>
+            <div class="batch-name">
+              <mat-icon>group</mat-icon>
+              {{ e.batch?.batchName }}
+            </div>
+            <div class="dates">
+              <mat-icon>calendar_today</mat-icon>
+              {{ e.batch?.startDate | date:'dd MMM yyyy' }}
+            </div>
+          </div>
+
+          <!-- Status + Actions -->
+          <div class="action-section">
+            <span class="status-badge"
+                  [style.background]="getStatusColor(e.status) + '15'"
+                  [style.color]="getStatusColor(e.status)">
+              {{ e.status }}
+            </span>
+
+            <p class="request-date">
+              {{ e.requestedAt | date:'dd MMM yyyy' }}
+            </p>
+
+            <!-- Approve/Reject buttons for Pending -->
+            <div class="action-btns" *ngIf="e.status === 'Pending'">
+              <button mat-raised-button class="approve-btn"
+                      [disabled]="approvingId === e._id"
+                      (click)="approve(e._id)">
+                <mat-spinner diameter="16" *ngIf="approvingId === e._id"></mat-spinner>
+                <span *ngIf="approvingId !== e._id">
+                  <mat-icon>thumb_up</mat-icon> Approve
+                </span>
+              </button>
+              <button mat-stroked-button class="reject-btn"
+                      (click)="toggleRejectForm(e._id)">
+                <mat-icon>thumb_down</mat-icon> Reject
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Rejection Reason Form -->
+        <div class="reject-form" *ngIf="showRejectForm === e._id">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Rejection Reason *</mat-label>
+           <textarea matInput [formControl]="$any(rejectForm.get('reason'))"
+          rows="2"
+          placeholder="Please provide a reason for rejection (min 10 characters)">
+</textarea>
+            <mat-error>Reason must be at least 10 characters</mat-error>
+          </mat-form-field>
+          <div class="reject-actions">
+            <button mat-button (click)="toggleRejectForm(e._id)">Cancel</button>
+            <button mat-raised-button class="confirm-reject-btn"
+                    [disabled]="rejectForm.invalid || rejectingId === e._id"
+                    (click)="reject(e._id)">
+              <mat-spinner diameter="16" *ngIf="rejectingId === e._id"></mat-spinner>
+              <span *ngIf="rejectingId !== e._id">Confirm Rejection</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Rejection Reason Display -->
+        <div class="rejection-display" *ngIf="e.status === 'Rejected' && e.rejectionReason">
+          <mat-icon>info</mat-icon>
+          Rejection Reason: {{ e.rejectionReason }}
+        </div>
+
+      </mat-card>
+    </div>
+
+  </ng-container>
+
+</div>

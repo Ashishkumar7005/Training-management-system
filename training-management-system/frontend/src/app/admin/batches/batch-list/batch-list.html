@@ -1,0 +1,147 @@
+<!-- <app-navbar role="admin"></app-navbar> -->
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <button mat-icon-button routerLink="/admin/dashboard" class="back-btn">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div>
+        <h1>Batch Management</h1>
+        <p>Create and manage training batches</p>
+      </div>
+    </div>
+    <button mat-raised-button class="add-btn" (click)="openAddDialog()">
+      <mat-icon>add</mat-icon> Add New Batch
+    </button>
+  </div>
+
+  <!-- Search -->
+  <mat-card class="search-card">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search batches...</mat-label>
+      <input matInput [(ngModel)]="searchText" (input)="onSearch()"
+             placeholder="Search by batch name, code, course..."/>
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+      <!-- newly added -->
+  <div class="results-badge">
+      <mat-icon>how_to_reg</mat-icon>
+      <span>{{ filteredBatches.length }} batches found</span>
+    </div>
+
+      
+    <!-- <span class="batch-count">{{ filteredBatches.length }} batches found</span> -->
+  </mat-card>
+
+  <!-- Loading -->
+  <div class="loading-wrapper" *ngIf="isLoading">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Loading batches...</p>
+  </div>
+
+  <!-- Content -->
+  <ng-container *ngIf="!isLoading">
+
+    <!-- Empty -->
+    <div class="empty-state" *ngIf="filteredBatches.length === 0">
+      <mat-icon>group</mat-icon>
+      <h3>No batches found</h3>
+      <p>Click "Add New Batch" to get started</p>
+    </div>
+
+    <!-- Batch Cards -->
+    <div class="batch-grid" *ngIf="filteredBatches.length > 0">
+      <mat-card class="batch-card" *ngFor="let b of filteredBatches">
+
+        <!-- Card Header -->
+        <div class="card-header">
+          <div class="batch-info">
+            <span class="batch-code">{{ b.batchCode }}</span>
+            <h3>{{ b.batchName }}</h3>
+            <p class="course-name">
+              <mat-icon>menu_book</mat-icon>
+              {{ b.course?.courseName || 'N/A' }}
+            </p>
+          </div>
+          <span class="status-badge"
+                [style.background]="getStatusColor(b.status) + '18'"
+                [style.color]="getStatusColor(b.status)">
+            {{ b.status }}
+          </span>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Card Details -->
+        <div class="card-details">
+          <div class="detail-item">
+            <mat-icon>calendar_today</mat-icon>
+            <div>
+              <span class="detail-label">Start Date</span>
+              <span class="detail-value">{{ b.startDate | date:'dd MMM yyyy' }}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <mat-icon>event</mat-icon>
+            <div>
+              <span class="detail-label">End Date</span>
+              <span class="detail-value">{{ b.endDate | date:'dd MMM yyyy' }}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <mat-icon>schedule</mat-icon>
+            <div>
+              <span class="detail-label">Time</span>
+              <span class="detail-value">{{ b.startTime }} - {{ b.endTime }}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <mat-icon>location_on</mat-icon>
+            <div>
+              <span class="detail-label">Venue</span>
+              <span class="detail-value">{{ b.venue }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Participants Bar -->
+        <div class="participants-section">
+          <div class="participants-header">
+            <span>
+              <mat-icon>people</mat-icon>
+              Participants
+            </span>
+            <span class="spots">
+              {{ b.enrolledParticipants?.length || 0 }}/{{ b.maxParticipants }}
+              ({{ getAvailableSpots(b) }} spots left)
+            </span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill"
+                 [style.width.%]="(b.enrolledParticipants?.length || 0) / b.maxParticipants * 100"
+                 [style.background]="getStatusColor(b.status)">
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="card-actions">
+          <button mat-stroked-button (click)="openEditDialog(b)">
+            <mat-icon>edit</mat-icon> Edit
+          </button>
+          <button mat-stroked-button class="delete-btn"
+                  (click)="deleteBatch(b._id, b.batchName)">
+            <mat-icon>delete</mat-icon> Delete
+          </button>
+        </div>
+
+      </mat-card>
+    </div>
+
+  </ng-container>
+
+</div>

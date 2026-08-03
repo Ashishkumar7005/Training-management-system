@@ -1,0 +1,117 @@
+<div class="login-wrapper split-screen">
+  
+  <!-- Left Side: TMS Brand, Highlighted Title & Illustration -->
+  <div class="login-left-panel">
+    <div class="bg-pattern"></div>
+    <div class="left-content">
+      
+      <!-- Brand Logo + Single Brand Name (No duplicate system title) -->
+      <div class="brand-header">
+        <div class="brand-logo">
+          <mat-icon>school</mat-icon>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">ABC Inc.</span>
+          <span class="brand-sub">Enterprise Portal</span>
+        </div>
+      </div>
+
+      <!-- Large, Single Highlighted Title -->
+      <div class="brand-section">
+        <h1 class="system-title">
+          TRAINING <br>
+          <span class="highlight-text">MANAGEMENT</span> <br>
+          SYSTEM
+        </h1>
+      </div>
+
+      <!-- Feature Description -->
+      <div class="left-description">
+        <p>
+          Imparting technical and non-technical skills to empower careers. 
+          Manage course schedules, request batch enrollments, and access weekly contact sessions.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side: Login Card with Dynamic Background -->
+  <div class="login-right-panel">
+    <div class="right-content">
+      
+      <mat-card class="login-card">
+        <div class="card-left-accent"></div>
+
+        <mat-card-content>
+          <div class="card-header">
+            <h2>Welcome Back</h2>
+            <p>Sign in to access your dashboard</p>
+          </div>
+
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+            <!-- Username -->
+            <div class="field-wrapper">
+              <label>Username</label>
+              <mat-form-field appearance="outline" class="full-width">
+                <input matInput formControlName="username" placeholder="Enter your username"/>
+                <mat-icon matSuffix>person_outline</mat-icon>
+                <mat-error *ngIf="loginForm.get('username')?.hasError('required')">
+                  Username is required
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Password -->
+            <div class="field-wrapper">
+              <label>Password</label>
+              <mat-form-field appearance="outline" class="full-width">
+                <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" placeholder="Enter your password"/>
+                <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+                  <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+                <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+                  Password is required
+                </mat-error>
+                <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">
+                  Minimum 6 characters required
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Error Box -->
+            <div class="error-box" *ngIf="errorMessage">
+              <mat-icon>error_outline</mat-icon>
+              <span>{{ errorMessage }}</span>
+            </div>
+
+            <!-- Submit Button -->
+            <button mat-raised-button class="full-width login-btn" type="submit" [disabled]="loginForm.invalid || isLoading">
+              <mat-spinner diameter="22" *ngIf="isLoading"></mat-spinner>
+              <span *ngIf="!isLoading">
+                <mat-icon>login</mat-icon> Sign In
+              </span>
+            </button>
+
+          </form>
+
+          <!-- Role Badges -->
+          <div class="role-badges">
+            <span class="badge admin">Admin</span>
+            <span class="badge manager">Manager</span>
+            <span class="badge employee">Employee</span>
+          </div>
+
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Footer -->
+      <div class="login-footer">
+        <p>© 2024 ABC Inc. All rights reserved. | Confidential</p>
+      </div>
+
+    </div>
+  </div>
+  
+</div>
+

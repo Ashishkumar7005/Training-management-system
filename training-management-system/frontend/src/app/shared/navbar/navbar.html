@@ -1,0 +1,52 @@
+<mat-toolbar class="navbar">
+
+  <!-- Left: Logo + Title -->
+  <div class="navbar-left">
+    <div class="nav-logo">
+      <mat-icon>school</mat-icon>
+    </div>
+    <div class="nav-title">
+      <span class="title-main">ABC Inc.</span>
+      <span class="title-sub">Training Management</span>
+    </div>
+  </div>
+
+  <span class="spacer"></span>
+
+  <!-- Right: User Menu -->
+  <div class="navbar-right">
+
+    <!-- Role Badge -->
+    <span class="role-badge" [style.background]="roleColor">
+      {{ roleLabel }}
+    </span>
+
+    <!-- User Menu -->
+    <button mat-button [matMenuTriggerFor]="userMenu" class="user-btn">
+      <div class="user-avatar">
+        {{ user?.firstName?.charAt(0) }}{{ user?.lastName?.charAt(0) }}
+      </div>
+      <span class="user-name">{{ user?.firstName }} {{ user?.lastName }}</span>
+      <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu" class="user-menu">
+      <div class="menu-header">
+        <p class="menu-name">{{ user?.firstName }} {{ user?.lastName }}</p>
+        <p class="menu-username">@{{ user?.username }}</p>
+      </div>
+      <mat-divider></mat-divider>
+      <button mat-menu-item>
+        <mat-icon>person</mat-icon> My Profile
+      </button>
+      <button mat-menu-item>
+        <mat-icon>settings</mat-icon> Settings
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="logout()" class="logout-item">
+        <mat-icon>logout</mat-icon> Sign Out
+      </button>
+    </mat-menu>
+
+  </div>
+</mat-toolbar>

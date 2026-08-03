@@ -1,0 +1,64 @@
+<div class="notfound-wrapper">
+
+  <!-- Background -->
+  <div class="bg-pattern"></div>
+
+  <div class="notfound-content">
+
+    <!-- Animated 404 -->
+    <div class="error-visual">
+      <div class="error-number">
+        <span class="digit">4</span>
+        <div class="zero-wrapper">
+          <div class="zero">
+            <mat-icon>search_off</mat-icon>
+          </div>
+        </div>
+        <span class="digit">4</span>
+      </div>
+    </div>
+
+    <!-- Text -->
+    <div class="error-text">
+      <h1>Page Not Found</h1>
+      <p>
+        Oops! The page you're looking for doesn't exist or
+        has been moved to a different location.
+      </p>
+    </div>
+
+    <!-- Actions -->
+  
+  <div class="error-actions">
+
+  <!-- User NOT Logged In -->
+  <ng-container *ngIf="!isLoggedIn; else loggedInActions">
+    <button mat-raised-button class="home-btn" (click)="goLogin()">
+      <mat-icon>login</mat-icon>
+      Go to Login
+    </button>
+  </ng-container>
+
+  <!-- User Logged In -->
+  <ng-template #loggedInActions>
+    <button mat-raised-button class="home-btn" (click)="goHome()">
+      <mat-icon>home</mat-icon>
+      Go to Dashboard
+    </button>
+
+    <button mat-stroked-button class="back-btn" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Go Back
+    </button>
+  </ng-template>
+
+</div>
+
+    <!-- Footer -->
+    <p class="error-footer">
+      ABC Inc. — Training Management System
+    </p>
+
+  </div>
+
+</div>

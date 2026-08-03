@@ -1,0 +1,162 @@
+<div class="dialog-wrapper">
+
+  <!-- Header -->
+  <div class="dialog-header">
+    <div class="header-icon">
+      <mat-icon>{{ isEditMode ? 'edit' : 'add_circle' }}</mat-icon>
+    </div>
+    <div>
+      <h2>{{ isEditMode ? 'Edit Batch' : 'Add New Batch' }}</h2>
+      <p>{{ isEditMode ? 'Update batch details' : 'Schedule a new training batch' }}</p>
+    </div>
+    <button mat-icon-button (click)="onCancel()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <form [formGroup]="batchForm" (ngSubmit)="onSubmit()">
+    <div class="dialog-body">
+
+      <!-- Row 1: Batch Name + Code -->
+      <div class="form-row">
+        <div class="form-col">
+          <label>Batch Name *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput formControlName="batchName"
+                   placeholder="e.g. Excel Batch January 2025"/>
+            <mat-error *ngIf="hasError('batchName','required')">Required</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="form-col">
+          <label>Batch Code *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput formControlName="batchCode"
+                   placeholder="e.g. EXL-B01"/>
+            <mat-error *ngIf="hasError('batchCode','required')">Required</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Row 2: Course -->
+      <div class="form-full">
+        <label>Course *</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select formControlName="course" placeholder="Select a course">
+            <mat-option *ngFor="let c of courses" [value]="c._id">
+              {{ c.courseCode }} — {{ c.courseName }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="hasError('course','required')">Required</mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Row 3: Start Date + End Date -->
+      <div class="form-row">
+        <div class="form-col">
+          <label>Start Date *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput [matDatepicker]="startPicker"
+                   formControlName="startDate" placeholder="DD/MM/YYYY" [min]="minDate"/>
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+            <mat-error *ngIf="hasError('startDate','required')">Required</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="form-col">
+          <label>End Date *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput [matDatepicker]="endPicker"
+                   formControlName="endDate" placeholder="DD/MM/YYYY" [min]="minDate"/>
+            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+            <mat-error *ngIf="hasError('endDate','required')">Required</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Row 4: Start Time + End Time -->
+      <div class="form-row">
+        <div class="form-col">
+          <label>Start Time *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput type="time" formControlName="startTime"/>
+            <mat-error *ngIf="hasError('startTime','required')">Required</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="form-col">
+          <label>End Time *</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput type="time" formControlName="endTime"/>
+            <mat-error *ngIf="hasError('endTime','required')">Required</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Row 5: Venue + Max Participants + Status -->
+      <!-- Row 5: Venue + Max Participants -->
+<div class="form-row">
+  <div class="form-col">
+    <label>Venue</label>
+    <mat-form-field appearance="outline" class="full-width">
+      <input matInput formControlName="venue" placeholder="e.g. Room 101 / Online"/>
+    </mat-form-field>
+  </div>
+  <div class="form-col">
+    <label>Max Participants *</label>
+    <mat-form-field appearance="outline" class="full-width">
+      <input matInput type="number" formControlName="maxParticipants"
+             placeholder="e.g. 20"/>
+      <mat-error *ngIf="hasError('maxParticipants','required')">Required</mat-error>
+    </mat-form-field>
+  </div>
+</div>
+
+<!-- Row 6: Status -->
+<div class="form-row">
+  <div class="form-col">
+    <label>Status</label>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-select formControlName="status">
+        <mat-option *ngFor="let s of statuses" [value]="s">{{ s }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="form-col"></div>
+</div>
+
+    </div>
+<!-- DEBUG -->
+<!-- <div style="background:yellow; padding:10px; font-size:12px;">
+  <p>Form Valid: {{ batchForm.valid }}</p>
+  <p>Batch Name: {{ batchForm.get('batchName')?.valid }}</p>
+  <p>Batch Code: {{ batchForm.get('batchCode')?.valid }}</p>
+  <p>Course: {{ batchForm.get('course')?.valid }}</p>
+  <p>Start Date: {{ batchForm.get('startDate')?.valid }}</p>
+  <p>End Date: {{ batchForm.get('endDate')?.valid }}</p>
+  <p>Start Time: {{ batchForm.get('startTime')?.valid }}</p>
+  <p>End Time: {{ batchForm.get('endTime')?.valid }}</p>
+  <p>Venue: {{ batchForm.get('venue')?.valid }}</p>
+  <p>Max Participants: {{ batchForm.get('maxParticipants')?.valid }}</p>
+  <p>Status: {{ batchForm.get('status')?.valid }}</p>
+</div> -->
+    <mat-divider></mat-divider>
+
+    <!-- Footer -->
+    <div class="dialog-footer">
+      <button mat-stroked-button type="button" (click)="onCancel()">
+        Cancel
+      </button>
+      <button mat-raised-button type="submit" class="submit-btn"
+              [disabled]="batchForm.invalid || isLoading">
+        <mat-spinner diameter="18" *ngIf="isLoading"></mat-spinner>
+        <span *ngIf="!isLoading">
+          <mat-icon>{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
+          {{ isEditMode ? 'Update Batch' : 'Create Batch' }}
+        </span>
+      </button>
+    </div>
+
+  </form>
+</div>
