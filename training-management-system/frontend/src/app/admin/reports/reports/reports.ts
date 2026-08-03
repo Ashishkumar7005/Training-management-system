@@ -55,7 +55,7 @@ export class ReportsComponent implements OnInit {
 
   statusFilters = ['All', 'Pending', 'Approved', 'Rejected', 'Enrolled', 'Completed'];
 
-  private apiUrl = 'http://localhost:5000/api/reports';
+  private apiUrl = 'https://training-management-system-8s6q.onrender.com/api/reports';
 
   constructor(
     private http: HttpClient,

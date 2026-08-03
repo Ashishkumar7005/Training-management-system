@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class StatsService {
 
-  private apiUrl = 'http://localhost:5000/api/stats';
+  private apiUrl = 'https://training-management-system-8s6q.onrender.com/api/stats';
 
   constructor(private http: HttpClient) {}
 

@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:5000/api/auth';
+  private apiUrl = 'https://training-management-system-8s6q.onrender.com/api/auth';
 
   constructor(private http: HttpClient, private router: Router) {}
 

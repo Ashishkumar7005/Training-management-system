@@ -49,7 +49,7 @@ export class ViewBatchesComponent implements OnInit {
     this.isLoading = true;
     this.cdr.detectChanges();
 
-    this.http.get('http://localhost:5000/api/batches').subscribe({
+    this.http.get('https://training-management-system-8s6q.onrender.com/api/batches').subscribe({
       next: (res: any) => {
         this.batches = res.batches || [];
         this.filteredBatches = res.batches || [];

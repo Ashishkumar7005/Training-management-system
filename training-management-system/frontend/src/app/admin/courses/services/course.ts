@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class CourseService {
 
-  private apiUrl = 'http://localhost:5000/api/courses';
+  private apiUrl = 'https://training-management-system-8s6q.onrender.com/api/courses';
 
   constructor(private http: HttpClient) {}
 

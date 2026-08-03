@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class BatchService {
 
-  private apiUrl = 'http://localhost:5000/api/batches';
+  private apiUrl = 'https://training-management-system-8s6q.onrender.com/api/batches';
 
   constructor(private http: HttpClient) {}
 
