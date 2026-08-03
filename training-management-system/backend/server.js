@@ -12,8 +12,9 @@ const app = express();
 // app.use(cors());
 app.use(cors({
   origin: [
-    'http://localhost:4200',
-    'training-management-system-b7tn.vercel.app'  // ← your actual Vercel URL
+   'http://localhost:4200',
+    'https://training-management-system-b7tn.vercel.app',
+    'https://training-management-system-b7tn-d3ino55zz.vercel.app'  // ← your actual Vercel URL
   ],
   credentials: true
 }));
